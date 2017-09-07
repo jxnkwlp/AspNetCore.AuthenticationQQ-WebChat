@@ -1,17 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Microsoft.AspNetCore.Authentication.QQ
 {
     class QQAuthenticationHelper
     {
-        /// <summary>
-        /// Gets the user identifier.
-        /// </summary>
-        public static string GetOpenId(JObject value) => value.Value<string>("openid");
-
         public static string GetNickname(JObject user) => user.Value<string>("nickname");
 
         public static string GetFigureUrl(JObject user) => user.Value<string>("figureurl");
@@ -36,18 +28,5 @@ namespace Microsoft.AspNetCore.Authentication.QQ
 
         public static string GetIsYellowYearVip(JObject user) => user.Value<string>("is_yellow_year_vip");
 
-        /// <summary>
-        /// Gets the privilege associated with the user profile.
-        /// </summary>
-        public static string GetPrivilege(JObject user)
-        {
-            var value = user.Value<JArray>("privilege");
-            if (value == null)
-            {
-                return null;
-            }
-
-            return string.Join(",", value.ToObject<string[]>());
-        }
     }
 }

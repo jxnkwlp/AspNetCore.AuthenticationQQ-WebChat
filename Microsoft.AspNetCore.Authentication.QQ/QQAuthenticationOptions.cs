@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Microsoft.AspNetCore.Authentication.QQ
 {
+    /// <summary>
+    ///  
+    /// </summary>
     public class QQAuthenticationOptions : OAuthOptions
     {
         public string OpenIdEndpoint { get; set; }

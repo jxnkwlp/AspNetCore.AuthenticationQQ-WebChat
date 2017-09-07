@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Authentication_Test.Models;
 using Authentication_Test.Models.AccountViewModels;
 using Authentication_Test.Services;
+using Microsoft.AspNetCore.Authentication.QQ;
 
 namespace Authentication_Test.Controllers
 {
@@ -174,14 +175,24 @@ namespace Authentication_Test.Controllers
                 return RedirectToAction(nameof(Login));
             }
 
+            var loginQQUserInfo = await HttpContext.Authentication.GetExternalQQLoginInfoAsync();
+
+            // return Json(loginQQUserInfo);
+
             return Json(new
             {
+                UserInfo = loginQQUserInfo,
+
                 AuthenticationTokens = info.AuthenticationTokens,
                 ProviderKey = info.ProviderKey,
                 ProviderDisplayName = info.ProviderDisplayName,
                 LoginProvider = info.LoginProvider,
                 Principal = info.Principal,
+
             });
+
+
+
 
             //// Sign in the user with this external login provider if the user already has a login.
             //var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);

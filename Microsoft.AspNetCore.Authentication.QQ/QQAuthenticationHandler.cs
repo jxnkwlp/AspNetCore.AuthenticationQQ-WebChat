@@ -1,24 +1,29 @@
 ﻿using Microsoft.AspNetCore.Authentication.OAuth;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Net.Http;
 using Microsoft.AspNetCore.Http.Authentication;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Microsoft.AspNetCore.Authentication.QQ
 {
+    /// <summary>
+    ///  https://docs.microsoft.com/en-us/aspnet/core/api/microsoft.aspnetcore.authentication.oauth.oauthhandler-1
+    /// </summary>
     public class QQAuthenticationHandler : OAuthHandler<QQAuthenticationOptions>
     {
         public QQAuthenticationHandler(HttpClient client) : base(client)
         {
-
         }
 
+
+        /// <summary>
+        ///  Last Step 
+        /// </summary> 
         protected override async Task<AuthenticationTicket> CreateTicketAsync(ClaimsIdentity identity, AuthenticationProperties properties, OAuthTokenResponse tokens)
         {
             // 获取用户OpenID
@@ -60,11 +65,11 @@ namespace Microsoft.AspNetCore.Authentication.QQ
                 throw new HttpRequestException("An error occurred while retrieving user information.");
             }
 
-            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, tokens.Response.Value<string>("openid"), Options.ClaimsIssuer));
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userOpenId, Options.ClaimsIssuer));
             identity.AddClaim(new Claim(ClaimTypes.Name, QQAuthenticationHelper.GetNickname(payload), Options.ClaimsIssuer));
             identity.AddClaim(new Claim(ClaimTypes.Gender, QQAuthenticationHelper.GetGender(payload), Options.ClaimsIssuer));
-            identity.AddClaim(new Claim("urn:qq:openid", QQAuthenticationHelper.GetOpenId(payload), Options.ClaimsIssuer));
 
+            identity.AddClaim(new Claim("urn:qq:openid", userOpenId, Options.ClaimsIssuer));
             identity.AddClaim(new Claim("urn:qq:figureurl", QQAuthenticationHelper.GetFigureUrl(payload), Options.ClaimsIssuer));
             identity.AddClaim(new Claim("urn:qq:figureurl_1", QQAuthenticationHelper.GetFigureUrl_1(payload), Options.ClaimsIssuer));
             identity.AddClaim(new Claim("urn:qq:figureurl_2", QQAuthenticationHelper.GetFigureUrl_2(payload), Options.ClaimsIssuer));
@@ -76,6 +81,8 @@ namespace Microsoft.AspNetCore.Authentication.QQ
             identity.AddClaim(new Claim("urn:qq:yellow_vip_level", QQAuthenticationHelper.GetYellowVipLevel(payload), Options.ClaimsIssuer));
             identity.AddClaim(new Claim("urn:qq:level", QQAuthenticationHelper.GetLevel(payload), Options.ClaimsIssuer));
             identity.AddClaim(new Claim("urn:qq:is_yellow_year_vip", QQAuthenticationHelper.GetIsYellowYearVip(payload), Options.ClaimsIssuer));
+
+            identity.AddClaim(new Claim("urn:qq:user_info", payload.ToString(), Options.ClaimsIssuer));
 
             var principal = new ClaimsPrincipal(identity);
             var ticket = new AuthenticationTicket(principal, properties, Options.AuthenticationScheme);
@@ -115,8 +122,12 @@ namespace Microsoft.AspNetCore.Authentication.QQ
                 return OAuthTokenResponse.Failed(new Exception("An error occurred while retrieving an access token."));
             }
 
-            var payload = JObject.Parse(await response.Content.ReadAsStringAsync());
-            if (!string.IsNullOrEmpty(payload.Value<string>("msg")))
+            // 成功：  access_token=FE04************************CCE2&expires_in=7776000&refresh_token=88E4************************BE14
+            // 失败：  callback( {"error":123456 ,"error_description":"**************"} );
+
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            if (responseString.StartsWith("callback"))
             {
                 Logger.LogError("An error occurred while retrieving an access token: the remote server " +
                                 "returned a {Status} response with the following payload: {Headers} {Body}.",
@@ -125,6 +136,17 @@ namespace Microsoft.AspNetCore.Authentication.QQ
                                 /* Body: */ await response.Content.ReadAsStringAsync());
 
                 return OAuthTokenResponse.Failed(new Exception("An error occurred while retrieving an access token."));
+            }
+
+            JObject payload = new JObject();
+
+            var responseParams = responseString.Split('&');
+
+            foreach (var parm in responseParams)
+            {
+                var kv = parm.Split('=');
+
+                payload[kv[0]] = kv[1];
             }
 
             return OAuthTokenResponse.Success(payload);
@@ -144,7 +166,7 @@ namespace Microsoft.AspNetCore.Authentication.QQ
             var response = await Backchannel.GetAsync(address);
             if (!response.IsSuccessStatusCode)
             {
-                Logger.LogError("An error occurred while retrieving the user profile: the remote server " +
+                Logger.LogError("An error occurred while retrieving the user open id: the remote server " +
                                 "returned a {Status} response with the following payload: {Headers} {Body}.",
                                 /* Status: */ response.StatusCode,
                                 /* Headers: */ response.Headers.ToString(),
@@ -153,21 +175,36 @@ namespace Microsoft.AspNetCore.Authentication.QQ
                 throw new HttpRequestException("An error occurred while retrieving user information.");
             }
 
-            string oauthTokenResponse = await response.Content.ReadAsStringAsync();
+            string responseString = await response.Content.ReadAsStringAsync();
 
             // callback( {"client_id":"YOUR_APPID","openid":"YOUR_OPENID"} );\n
 
-            oauthTokenResponse = oauthTokenResponse.Remove(0, 9);
-            oauthTokenResponse = oauthTokenResponse.Remove(oauthTokenResponse.Length - 3);
+            responseString = responseString.Remove(0, 9);
+            responseString = responseString.Remove(responseString.Length - 3);
 
-            JObject oauth2Token = JObject.Parse(oauthTokenResponse);
+            JObject oauth2Token = JObject.Parse(responseString);
 
-            return oauth2Token.Value<string>("client_id");
+            return oauth2Token.Value<string>("openid");
         }
 
         protected override string FormatScope()
         {
             return string.Join(",", Options.Scope);
         }
+
+        /// <summary>
+        ///  Step1：获取Authorization Code 
+        ///  构建请求地址
+        /// </summary>
+        /// <param name="properties"></param>
+        /// <param name="redirectUri"></param>
+        /// <returns></returns>
+        protected override string BuildChallengeUrl(AuthenticationProperties properties, string redirectUri)
+        {
+            var url = base.BuildChallengeUrl(properties, redirectUri);
+            return url;
+        }
+
+
     }
 }

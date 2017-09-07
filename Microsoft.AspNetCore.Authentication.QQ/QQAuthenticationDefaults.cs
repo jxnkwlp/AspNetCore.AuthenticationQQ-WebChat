@@ -29,9 +29,6 @@ namespace Microsoft.AspNetCore.Authentication.QQ
         /// </summary>
         public const string Issuer = "QQ";
 
-        /// <summary>
-        /// Default value for <see cref="OAuthOptions.AuthorizationEndpoint"/>.
-        /// </summary>
         public const string AuthorizationEndpoint = "https://graph.qq.com/oauth2.0/authorize";
         public const string TokenEndpoint = "https://graph.qq.com/oauth2.0/token";
         public const string TokenRefreshEndpoint = "https://graph.qq.com/oauth2.0/token";
