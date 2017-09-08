@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.AspNetCore.Builder;
 
 namespace Microsoft.AspNetCore.Authentication.QQ
 {
@@ -29,10 +27,27 @@ namespace Microsoft.AspNetCore.Authentication.QQ
         /// </summary>
         public const string Issuer = "QQ";
 
+        /// <summary>
+        /// Default value for <see cref="OAuthOptions.AuthorizationEndpoint"/>.
+        /// </summary>
         public const string AuthorizationEndpoint = "https://graph.qq.com/oauth2.0/authorize";
+
+
+        /// <summary>
+        /// Default value for <see cref="OAuthOptions.TokenEndpoint"/>.
+        /// </summary>
         public const string TokenEndpoint = "https://graph.qq.com/oauth2.0/token";
-        public const string TokenRefreshEndpoint = "https://graph.qq.com/oauth2.0/token";
+
+        //public const string TokenRefreshEndpoint = "https://graph.qq.com/oauth2.0/token";
+
+        /// <summary>
+        /// Default value for get user openid endpoint.
+        /// </summary>
         public const string UserOpenIdEndpoint = "https://graph.qq.com/oauth2.0/me";
+
+        /// <summary>
+        /// Default value for <see cref="OAuthOptions.UserInformationEndpoint"/>.
+        /// </summary>
         public const string UserInformationEndpoint = "https://graph.qq.com/user/get_user_info";
     }
 }

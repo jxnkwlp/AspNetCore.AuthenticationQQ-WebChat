@@ -1,4 +1,6 @@
-﻿namespace Microsoft.AspNetCore.Authentication.Weixin
+﻿using Microsoft.AspNetCore.Builder;
+
+namespace Microsoft.AspNetCore.Authentication.Weixin
 {
     /// <summary>
     /// Default values for Weixin authentication.
