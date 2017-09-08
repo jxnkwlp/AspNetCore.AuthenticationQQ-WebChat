@@ -14,6 +14,7 @@ using Authentication_Test.Models;
 using Authentication_Test.Models.AccountViewModels;
 using Authentication_Test.Services;
 using Microsoft.AspNetCore.Authentication.QQ;
+using Microsoft.AspNetCore.Authentication.Weixin;
 
 namespace Authentication_Test.Controllers
 {
@@ -277,17 +278,43 @@ namespace Authentication_Test.Controllers
                 return RedirectToAction(nameof(Login));
             }
 
-            var loginQQUserInfo = await HttpContext.GetExternalQQLoginInfoAsync();
+            if (info.LoginProvider.Equals("QQ", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var loginInfo = await HttpContext.GetExternalQQLoginInfoAsync();
+
+                return Json(new
+                {
+                    UserInfo = loginInfo,
+
+                    ProviderKey = info.ProviderKey, // open id
+                    ProviderDisplayName = info.ProviderDisplayName,
+                    LoginProvider = info.LoginProvider,
+
+                });
+            }
+            else if (info.LoginProvider.Equals("Weixin", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var loginInfo = await HttpContext.GetExternalWeixinLoginInfoAsync();
+
+                return Json(new
+                {
+                    UserInfo = loginInfo,
+
+                    ProviderKey = info.ProviderKey, //unionid
+                    ProviderDisplayName = info.ProviderDisplayName,
+                    LoginProvider = info.LoginProvider,
+
+                });
+            }
+
 
             return Json(new
             {
-                UserInfo = loginQQUserInfo,
-
                 ProviderKey = info.ProviderKey,
                 ProviderDisplayName = info.ProviderDisplayName,
                 LoginProvider = info.LoginProvider,
-
             });
+
 
 
             //// Sign in the user with this external login provider if the user already has a login.

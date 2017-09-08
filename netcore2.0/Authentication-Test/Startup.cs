@@ -37,15 +37,15 @@ namespace Authentication_Test
             services.AddTransient<IEmailSender, EmailSender>();
 
             services.AddAuthentication()
-                .AddMicrosoftAccount(options =>
-                {
-                    options.ClientId = Configuration.GetValue<string>("Authentication:Microsoft:ClientId");
-                    options.ClientSecret = Configuration.GetValue<string>("Authentication:Microsoft:ClientSecret");
-                })
                 .AddQQAuthentication(options =>
                 {
                     options.ClientId = Configuration.GetValue<string>("Authentication:QQ:ClientId");
                     options.ClientSecret = Configuration.GetValue<string>("Authentication:QQ:ClientSecret");
+                })
+                .AddWeixinAuthentication(options =>
+                {
+                    options.ClientId = Configuration.GetValue<string>("Authentication:Weixin:ClientId");
+                    options.ClientSecret = Configuration.GetValue<string>("Authentication:Weixin:ClientSecret");
                 });
 
             services.AddMvc();

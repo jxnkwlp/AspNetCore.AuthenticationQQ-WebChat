@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.AspNetCore.Authentication.QQ\Microsoft.AspNetCore.Authentication.QQ.csproj" />
+    <ProjectReference Include="..\Microsoft.AspNetCore.Authentication.Weixin\Microsoft.AspNetCore.Authentication.Weixin.csproj" />
   </ItemGroup>
 
 </Project>

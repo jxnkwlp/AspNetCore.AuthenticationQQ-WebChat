@@ -2,7 +2,6 @@
 QQ and Webchat extensions for Microsoft.AspNetCore.Authentication
 
 # Get Started
-### dotnet core 1.1
 
 - QQ   
 ~~~ csharp
@@ -80,7 +79,6 @@ public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, 
 QQ 和 微信 Microsoft.AspNetCore.Authentication 扩展
 
 # 使用方法
-### dotnet core 1.1
 
 - QQ   
 ~~~ csharp
@@ -116,7 +114,7 @@ public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, 
 }
 ~~~
 
-- Webchat
+- 微信
 ~~~ csharp
  // startup.cs 
 public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
