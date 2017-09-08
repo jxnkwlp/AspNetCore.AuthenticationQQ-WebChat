@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.AspNetCore.Authentication.QQ
+﻿namespace Microsoft.AspNetCore.Authentication.QQ
 {
     /// <summary>
     /// Default values for QQ authentication.
@@ -31,7 +27,7 @@ namespace Microsoft.AspNetCore.Authentication.QQ
 
         public const string AuthorizationEndpoint = "https://graph.qq.com/oauth2.0/authorize";
         public const string TokenEndpoint = "https://graph.qq.com/oauth2.0/token";
-        public const string TokenRefreshEndpoint = "https://graph.qq.com/oauth2.0/token";
+        //public const string TokenRefreshEndpoint = "https://graph.qq.com/oauth2.0/token";
         public const string UserOpenIdEndpoint = "https://graph.qq.com/oauth2.0/me";
         public const string UserInformationEndpoint = "https://graph.qq.com/user/get_user_info";
     }

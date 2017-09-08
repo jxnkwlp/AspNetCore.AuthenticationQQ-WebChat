@@ -5,6 +5,9 @@
     /// </summary>
     static class WeixinAuthenticationDefaults
     {
+        /// <summary>
+        /// Default value for <see cref="AuthenticationOptions.DefaultAuthenticateScheme"/>.
+        /// </summary>
         public const string AuthenticationScheme = "Weixin";
 
         public const string DisplayName = "Weixin";
