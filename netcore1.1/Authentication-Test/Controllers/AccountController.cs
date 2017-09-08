@@ -13,6 +13,7 @@ using Authentication_Test.Models;
 using Authentication_Test.Models.AccountViewModels;
 using Authentication_Test.Services;
 using Microsoft.AspNetCore.Authentication.QQ;
+using Microsoft.AspNetCore.Authentication.Weixin;
 
 namespace Authentication_Test.Controllers
 {
@@ -175,20 +176,40 @@ namespace Authentication_Test.Controllers
                 return RedirectToAction(nameof(Login));
             }
 
-            var loginQQUserInfo = await HttpContext.Authentication.GetExternalQQLoginInfoAsync();
+            if (info.LoginProvider.Equals("QQ", StringComparison.OrdinalIgnoreCase))
+            {
+                var loginInfo = await HttpContext.Authentication.GetExternalQQLoginInfoAsync();
 
-            // return Json(loginQQUserInfo);
+                return Json(new
+                {
+                    UserInfo = loginInfo,
+
+                    ProviderKey = info.ProviderKey, // open id
+                    ProviderDisplayName = info.ProviderDisplayName,
+                    LoginProvider = info.LoginProvider,
+                });
+            }
+            else if (info.LoginProvider.Equals("Weixin", StringComparison.OrdinalIgnoreCase))
+            {
+                var loginInfo = await HttpContext.Authentication.GetExternalWeixinLoginInfoAsync();
+
+                return Json(new
+                {
+                    UserInfo = loginInfo,
+
+                    ProviderKey = info.ProviderKey,  // unionid 
+                    ProviderDisplayName = info.ProviderDisplayName,
+                    LoginProvider = info.LoginProvider,
+                });
+            }
+
 
             return Json(new
             {
-                UserInfo = loginQQUserInfo,
-
-                AuthenticationTokens = info.AuthenticationTokens,
                 ProviderKey = info.ProviderKey,
                 ProviderDisplayName = info.ProviderDisplayName,
                 LoginProvider = info.LoginProvider,
                 Principal = info.Principal,
-
             });
 
 

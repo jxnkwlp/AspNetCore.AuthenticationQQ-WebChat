@@ -18,6 +18,7 @@ namespace Microsoft.AspNetCore.Authentication.Weixin
         }
 
         /// <summary>
+        ///  Last step:
         ///  create ticket from remote server
         /// </summary>
         /// <param name="identity"></param>
@@ -66,6 +67,8 @@ namespace Microsoft.AspNetCore.Authentication.Weixin
             identity.AddClaim(new Claim("urn:weixin:headimgurl", WeixinAuthenticationHelper.GetHeadimgUrl(payload), Options.ClaimsIssuer));
             identity.AddClaim(new Claim("urn:weixin:privilege", WeixinAuthenticationHelper.GetPrivilege(payload), Options.ClaimsIssuer));
 
+            identity.AddClaim(new Claim("urn:weixin:user_info", payload.ToString(), Options.ClaimsIssuer));
+
             var principal = new ClaimsPrincipal(identity);
             var ticket = new AuthenticationTicket(principal, properties, Options.AuthenticationScheme);
 
@@ -76,11 +79,8 @@ namespace Microsoft.AspNetCore.Authentication.Weixin
         }
 
         /// <summary>
-        ///
-        /// </summary>
-        /// <param name="code"></param>
-        /// <param name="redirectUri"></param>
-        /// <returns></returns>
+        /// Step 2：通过code获取access_token
+        /// </summary> 
         protected override async Task<OAuthTokenResponse> ExchangeCodeAsync(string code, string redirectUri)
         {
             var address = QueryHelpers.AddQueryString(Options.TokenEndpoint, new Dictionary<string, string>()
@@ -117,6 +117,10 @@ namespace Microsoft.AspNetCore.Authentication.Weixin
             return OAuthTokenResponse.Success(payload);
         }
 
+        /// <summary>
+        ///  Step 1：请求CODE 
+        ///  构建用户授权地址
+        /// </summary> 
         protected override string BuildChallengeUrl(AuthenticationProperties properties, string redirectUri)
         {
             return QueryHelpers.AddQueryString(Options.AuthorizationEndpoint, new Dictionary<string, string>

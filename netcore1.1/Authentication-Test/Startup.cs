@@ -76,22 +76,22 @@ namespace Authentication_Test
             app.UseIdentity();
 
             // Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715
-            app.UseMicrosoftAccountAuthentication(new MicrosoftAccountOptions()
-            {
-                ClientId = Configuration["Authentication:Microsoft:ClientId"],
-                ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"]
-            });
+            //app.UseMicrosoftAccountAuthentication(new MicrosoftAccountOptions()
+            //{
+            //    ClientId = Configuration["Authentication:Microsoft:ClientId"],
+            //    ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"]
+            //});
             // QQ
             app.UseQQAuthentication(new Microsoft.AspNetCore.Authentication.QQ.QQAuthenticationOptions()
             {
                 ClientId = Configuration["Authentication:QQ:ClientId"],
-                ClientSecret = Configuration["Authentication:QQ:ClientSecret"]
+                ClientSecret = Configuration["Authentication:QQ:ClientSecret"],
             });
             // Weixin
             app.UseWeixinAuthentication(new Microsoft.AspNetCore.Authentication.Weixin.WeixinAuthenticationOptions()
             {
-                ClientId = Configuration["Authentication:Weixin:ClientId"],
-                ClientSecret = Configuration["Authentication:Weixin:ClientSecret"]
+                ClientId = Configuration["Authentication:Weixin:ClientSecret"],
+                ClientSecret = Configuration["Authentication:Weixin:ClientSecret"],
             });
 
             app.UseMvc(routes =>
