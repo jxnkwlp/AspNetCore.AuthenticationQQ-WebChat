@@ -2,8 +2,11 @@
 @using System.Linq
 @using Microsoft.AspNetCore.Http
 @using Microsoft.AspNetCore.Http.Authentication
+@using Microsoft.AspNetCore.Authentication.MultiOAuth.Stores
+
 @model LoginViewModel
 @inject SignInManager<ApplicationUser> SignInManager
+@inject IClientStore clientStore
 
 @{
     ViewData["Title"] = "Log in";
@@ -53,31 +56,16 @@
         <section>
             <h4>Use another service to log in.</h4>
             <hr />
-            @{
-                var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-                if (loginProviders.Count == 0)
-                {
-                    <div>
-                        <p>
-                            There are no external authentication services configured. See <a href="https://go.microsoft.com/fwlink/?LinkID=532715">this article</a>
-                            for details on setting up this ASP.NET application to support logging in via external services.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <form asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
-                        <div>
-                            <p>
-                                @foreach (var provider in loginProviders)
-                                {
-                                    <button type="submit" class="btn btn-default" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.Name</button>
-                                }
-                            </p>
-                        </div>
-                    </form>
-                }
-            }
+
+            <form asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+                <div>
+                    <p> 
+                        <button type="submit" class="btn btn-default" name="provider" value="Weixin" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" asp-route-subjectId="client1">weixin(client1)</button>
+                        <button type="submit" class="btn btn-default" name="provider" value="Weixin" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" asp-route-subjectId="client2">weixin(client2)</button>
+                    </p>
+                </div>
+            </form>
+
         </section>
     </div>
 </div>

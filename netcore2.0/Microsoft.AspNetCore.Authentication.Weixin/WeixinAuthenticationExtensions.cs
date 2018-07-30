@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.MultiOAuth;
+using Microsoft.AspNetCore.Authentication.MultiOAuth.Stores;
 using Microsoft.AspNetCore.Authentication.Weixin;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using System;
-
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -11,31 +14,59 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         /// <summary> 
         /// </summary>
-        public static AuthenticationBuilder AddWeixinAuthentication(this AuthenticationBuilder builder)
+        public static AuthenticationBuilder AddWeixinAuthenticationStore<TClientStore>(this AuthenticationBuilder builder) where TClientStore : class, IClientStore
         {
-            return builder.AddWeixinAuthentication(WeixinAuthenticationDefaults.AuthenticationScheme, WeixinAuthenticationDefaults.DisplayName, options => { });
+            return builder.AddWeixinAuthenticationStore<TClientStore>(WeixinAuthenticationDefaults.AuthenticationScheme, WeixinAuthenticationDefaults.DisplayName, options => { });
         }
 
-        /// <summary> 
-        /// </summary>
-        public static AuthenticationBuilder AddWeixinAuthentication(this AuthenticationBuilder builder, Action<WeixinAuthenticationOptions> configureOptions)
+        ///// <summary> 
+        ///// </summary>
+        //public static AuthenticationBuilder AddWeixinAuthenticationStore<TClientStore>(this AuthenticationBuilder builder, Action<WeixinAuthenticationOptions> configureOptions)
+        //{
+        //    return builder.AddWeixinAuthenticationStore(WeixinAuthenticationDefaults.AuthenticationScheme, WeixinAuthenticationDefaults.DisplayName, configureOptions);
+        //}
+
+        ///// <summary> 
+        ///// </summary>
+        //public static AuthenticationBuilder AddWeixinAuthenticationStore<TClientStore>(this AuthenticationBuilder builder, string authenticationScheme, Action<WeixinAuthenticationOptions> configureOptions)
+        //{
+        //    return builder.AddWeixinAuthenticationStore<TClientStore>(authenticationScheme, WeixinAuthenticationDefaults.DisplayName, configureOptions);
+        //}
+
+        public static AuthenticationBuilder AddWeixinAuthenticationStore<TClientStore>(this AuthenticationBuilder builder, string authenticationScheme, string displayName, Action<WeixinAuthenticationOptions> configureOptions) where TClientStore : class, IClientStore
         {
-            return builder.AddWeixinAuthentication(WeixinAuthenticationDefaults.AuthenticationScheme, WeixinAuthenticationDefaults.DisplayName, configureOptions);
+            builder.Services.AddScoped<IClientStore, TClientStore>();
+            return builder.AddMultiOAuth<WeixinAuthenticationOptions, WeixinAuthenticationHandler>(authenticationScheme, displayName, configureOptions);
         }
 
-        /// <summary> 
-        /// </summary>
-        public static AuthenticationBuilder AddWeixinAuthentication(this AuthenticationBuilder builder, string authenticationScheme, Action<WeixinAuthenticationOptions> configureOptions)
+
+        public static AuthenticationBuilder AddMultiOAuth<TOptions, THandler>(this AuthenticationBuilder builder, string authenticationScheme, string displayName, Action<TOptions> configureOptions)
+           where TOptions : MultiOAuthOptions, new()
+           where THandler : MultiOAuthHandler<TOptions>
         {
-            return builder.AddWeixinAuthentication(authenticationScheme, WeixinAuthenticationDefaults.DisplayName, configureOptions);
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<TOptions>, MultiOAuthPostConfigureOptions<TOptions, THandler>>());
+            return builder.AddRemoteScheme<TOptions, THandler>(authenticationScheme, displayName, configureOptions);
         }
 
-        /// <summary> 
-        /// </summary>
-        public static AuthenticationBuilder AddWeixinAuthentication(this AuthenticationBuilder builder, string authenticationScheme, string displayName, Action<WeixinAuthenticationOptions> configureOptions)
-        {
-            return builder.AddOAuth<WeixinAuthenticationOptions, WeixinAuthenticationHandler>(authenticationScheme, displayName, configureOptions);
-        }
+
+        //private AuthenticationBuilder AddSchemeHelper<TOptions, THandler>(string authenticationScheme, string displayName, Action<TOptions> configureOptions)
+        //where TOptions : class, new()
+        //where THandler : class, IAuthenticationHandler
+        //    {
+        //        Services.Configure<AuthenticationOptions>(o =>
+        //        {
+        //            o.AddScheme(authenticationScheme, scheme => {
+        //                scheme.HandlerType = typeof(THandler);
+        //                scheme.DisplayName = displayName;
+        //            });
+        //        });
+        //        if (configureOptions != null)
+        //        {
+        //            Services.Configure(authenticationScheme, configureOptions);
+        //        }
+        //        Services.AddTransient<THandler>();
+        //        return this;
+        //    }
     }
 }
 

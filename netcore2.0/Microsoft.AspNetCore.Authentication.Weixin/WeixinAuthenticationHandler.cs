@@ -1,23 +1,35 @@
-﻿using Microsoft.AspNetCore.Authentication.OAuth;
-using Microsoft.AspNetCore.Http.Authentication;
+﻿using Microsoft.AspNetCore.Authentication.MultiOAuth;
+using Microsoft.AspNetCore.Authentication.MultiOAuth.Events;
+using Microsoft.AspNetCore.Authentication.MultiOAuth.Stores;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 
 namespace Microsoft.AspNetCore.Authentication.Weixin
 {
-    class WeixinAuthenticationHandler : OAuthHandler<WeixinAuthenticationOptions>
+    internal class WeixinAuthenticationHandler : MultiOAuthHandler<WeixinAuthenticationOptions>
     {
-        public WeixinAuthenticationHandler(IOptionsMonitor<WeixinAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
+        public WeixinAuthenticationHandler(IOptionsMonitor<WeixinAuthenticationOptions> options, IClientStore clientStore, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, clientStore, logger, encoder, clock)
         {
         }
+
+        protected override async Task InitializeHandlerAsync()
+        {
+            await base.InitializeHandlerAsync();
+        }
+
+        //protected virtual WeixinAuthenticationOptions GetOptions(string subjectId)
+        //{
+        //    return OptionStore.GetOptionsBySubject(subjectId);
+        //}
 
         /// <summary>
         ///  Last step:
@@ -59,19 +71,32 @@ namespace Microsoft.AspNetCore.Authentication.Weixin
                 throw new HttpRequestException("An error occurred while retrieving user information.");
             }
 
-            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, WeixinAuthenticationHelper.GetUnionid(payload), Options.ClaimsIssuer));
+            string unionid = WeixinAuthenticationHelper.GetUnionid(payload);
+            string openid = WeixinAuthenticationHelper.GetOpenId(payload);
+
+            if (!string.IsNullOrWhiteSpace(unionid))
+            {
+                identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, unionid, Options.ClaimsIssuer));
+                identity.AddClaim(new Claim("urn:weixin:unionid", unionid, Options.ClaimsIssuer));
+            }
+            else
+            {
+                identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, openid, Options.ClaimsIssuer));
+            }
             identity.AddClaim(new Claim(ClaimTypes.Name, WeixinAuthenticationHelper.GetNickname(payload), Options.ClaimsIssuer));
             identity.AddClaim(new Claim(ClaimTypes.Gender, WeixinAuthenticationHelper.GetSex(payload), Options.ClaimsIssuer));
             identity.AddClaim(new Claim(ClaimTypes.Country, WeixinAuthenticationHelper.GetCountry(payload), Options.ClaimsIssuer));
-            identity.AddClaim(new Claim("urn:weixin:openid", WeixinAuthenticationHelper.GetOpenId(payload), Options.ClaimsIssuer));
+            identity.AddClaim(new Claim("urn:weixin:openid", openid, Options.ClaimsIssuer));
             identity.AddClaim(new Claim("urn:weixin:province", WeixinAuthenticationHelper.GetProvince(payload), Options.ClaimsIssuer));
             identity.AddClaim(new Claim("urn:weixin:city", WeixinAuthenticationHelper.GetCity(payload), Options.ClaimsIssuer));
             identity.AddClaim(new Claim("urn:weixin:headimgurl", WeixinAuthenticationHelper.GetHeadimgUrl(payload), Options.ClaimsIssuer));
             identity.AddClaim(new Claim("urn:weixin:privilege", WeixinAuthenticationHelper.GetPrivilege(payload), Options.ClaimsIssuer));
 
+            identity.AddClaim(new Claim("urn:subjectId", properties.Items["subjectId"]));
+
             identity.AddClaim(new Claim("urn:weixin:user_info", payload.ToString(), Options.ClaimsIssuer));
 
-            var context = new OAuthCreatingTicketContext(new ClaimsPrincipal(identity), properties, Context, Scheme, Options, Backchannel, tokens, payload);
+            var context = new MultiOAuthCreatingTicketContext(new ClaimsPrincipal(identity), properties, Context, Scheme, Options, Backchannel, tokens, payload);
             context.RunClaimActions();
 
             await Events.CreatingTicket(context);
@@ -81,13 +106,15 @@ namespace Microsoft.AspNetCore.Authentication.Weixin
 
         /// <summary>
         /// Step 2：通过code获取access_token
-        /// </summary> 
-        protected override async Task<OAuthTokenResponse> ExchangeCodeAsync(string code, string redirectUri)
+        /// </summary>
+        protected override async Task<OAuthTokenResponse> ExchangeCodeAsync(string subjectId, string code, string redirectUri)
         {
+            var clientStore = GetClientStore(subjectId);
+
             var address = QueryHelpers.AddQueryString(Options.TokenEndpoint, new Dictionary<string, string>()
             {
-                ["appid"] = Options.ClientId,
-                ["secret"] = Options.ClientSecret,
+                ["appid"] = clientStore.ClientId,
+                ["secret"] = clientStore.ClientSecret,
                 ["code"] = code,
                 ["grant_type"] = "authorization_code"
             });
@@ -119,14 +146,14 @@ namespace Microsoft.AspNetCore.Authentication.Weixin
         }
 
         /// <summary>
-        ///  Step 1：请求CODE 
+        ///  Step 1：请求CODE
         ///  构建用户授权地址
-        /// </summary> 
-        protected override string BuildChallengeUrl(AuthenticationProperties properties, string redirectUri)
+        /// </summary>
+        protected override string BuildChallengeUrl(AuthenticationProperties properties, string redirectUri, StoreModel storeModel)
         {
             return QueryHelpers.AddQueryString(Options.AuthorizationEndpoint, new Dictionary<string, string>
             {
-                ["appid"] = Options.ClientId,
+                ["appid"] = storeModel.ClientId,
                 ["scope"] = FormatScope(),
                 ["response_type"] = "code",
                 ["redirect_uri"] = redirectUri,

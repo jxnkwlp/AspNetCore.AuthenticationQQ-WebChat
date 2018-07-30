@@ -5,14 +5,14 @@ VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authentication-Test", "Authentication-Test\Authentication-Test.csproj", "{81827AA3-D36D-4EB3-BA3C-83CFABF4DE64}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Authentication.QQ", "Microsoft.AspNetCore.Authentication.QQ\Microsoft.AspNetCore.Authentication.QQ.csproj", "{7B216591-66EA-4295-B863-3D7EDFB92C15}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Authentication.Weixin", "Microsoft.AspNetCore.Authentication.Weixin\Microsoft.AspNetCore.Authentication.Weixin.csproj", "{AB6BB6D8-A15D-48DD-B426-CCDC0B938E5B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0C906ED4-5BD0-4608-B888-56B5FD4621FC}"
 	ProjectSection(SolutionItems) = preProject
 		readme.md = readme.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.AspNetCore.Authentication.MultiOAuth", "Microsoft.AspNetCore.Authentication.MultiOAuth\Microsoft.AspNetCore.Authentication.MultiOAuth.csproj", "{EFB73EC8-8C79-4BC5-844B-0CF625DA8ED1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,14 +24,14 @@ Global
 		{81827AA3-D36D-4EB3-BA3C-83CFABF4DE64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81827AA3-D36D-4EB3-BA3C-83CFABF4DE64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81827AA3-D36D-4EB3-BA3C-83CFABF4DE64}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7B216591-66EA-4295-B863-3D7EDFB92C15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7B216591-66EA-4295-B863-3D7EDFB92C15}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7B216591-66EA-4295-B863-3D7EDFB92C15}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7B216591-66EA-4295-B863-3D7EDFB92C15}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AB6BB6D8-A15D-48DD-B426-CCDC0B938E5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AB6BB6D8-A15D-48DD-B426-CCDC0B938E5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB6BB6D8-A15D-48DD-B426-CCDC0B938E5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB6BB6D8-A15D-48DD-B426-CCDC0B938E5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFB73EC8-8C79-4BC5-844B-0CF625DA8ED1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFB73EC8-8C79-4BC5-844B-0CF625DA8ED1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFB73EC8-8C79-4BC5-844B-0CF625DA8ED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFB73EC8-8C79-4BC5-844B-0CF625DA8ED1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

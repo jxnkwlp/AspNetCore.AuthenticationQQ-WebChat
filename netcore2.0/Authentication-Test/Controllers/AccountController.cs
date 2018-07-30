@@ -13,7 +13,6 @@ using Microsoft.Extensions.Options;
 using Authentication_Test.Models;
 using Authentication_Test.Models.AccountViewModels;
 using Authentication_Test.Services;
-using Microsoft.AspNetCore.Authentication.QQ;
 using Microsoft.AspNetCore.Authentication.Weixin;
 
 namespace Authentication_Test.Controllers
@@ -255,17 +254,21 @@ namespace Authentication_Test.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public IActionResult ExternalLogin(string provider, string returnUrl = null)
+        public IActionResult ExternalLogin(string provider, string subjectId, string returnUrl = null)
         {
             // Request a redirect to the external login provider.
-            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
+            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { subjectId, returnUrl });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+
+            // add subjectId
+            properties.Items["subjectId"] = subjectId;
+
             return Challenge(properties, provider);
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        public async Task<IActionResult> ExternalLoginCallback(string subjectId, string returnUrl = null, string remoteError = null)
         {
             if (remoteError != null)
             {
@@ -278,21 +281,22 @@ namespace Authentication_Test.Controllers
                 return RedirectToAction(nameof(Login));
             }
 
-            if (info.LoginProvider.Equals("QQ", StringComparison.InvariantCultureIgnoreCase))
-            {
-                var loginInfo = await HttpContext.GetExternalQQLoginInfoAsync();
+            //if (info.LoginProvider.Equals("QQ", StringComparison.InvariantCultureIgnoreCase))
+            //{
+            //    var loginInfo = await HttpContext.GetExternalQQLoginInfoAsync();
 
-                return Json(new
-                {
-                    UserInfo = loginInfo,
+            //    return Json(new
+            //    {
+            //        UserInfo = loginInfo,
 
-                    ProviderKey = info.ProviderKey, // open id
-                    ProviderDisplayName = info.ProviderDisplayName,
-                    LoginProvider = info.LoginProvider,
+            //        ProviderKey = info.ProviderKey, // open id
+            //        ProviderDisplayName = info.ProviderDisplayName,
+            //        LoginProvider = info.LoginProvider,
 
-                });
-            }
-            else if (info.LoginProvider.Equals("Weixin", StringComparison.InvariantCultureIgnoreCase))
+            //    });
+            //}
+
+            if (info.LoginProvider.Equals("Weixin", StringComparison.InvariantCultureIgnoreCase))
             {
                 var loginInfo = await HttpContext.GetExternalWeixinLoginInfoAsync();
 
