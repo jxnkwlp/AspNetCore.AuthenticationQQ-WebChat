@@ -1,78 +1,99 @@
+# MultiOAuth
+
+config multi oauth client (example only weixin implement) , use 'SubjectId' to distinguish between different clients  .
+¶¯Ì¬ oauth ¿Í»§¶ËÅäÖÃ£¨µ±Ç°ÊµÏÖÁËÎ¢ĞÅµÇÂ¼£¬¿ÉÒÔÅäÖÃ¶à¸öappid£©£¬Ê¹ÓÃ 'SubjectId' À´Çø·Ö²»Í¬µÄ¿Í»§¶Ë
+
+# Useage
+
+1. config clients.  eg: define `WeixinClientStore` class implement `IClientStore`  .   ÅäÖÃ clients, ÊµÏÖ`IClientStore` ½Ó¿Ú 
+
+~~~ csharp  
+public class WeixinClientStore : IClientStore
+{
+    List<StoreModel> _stores = new List<StoreModel>() {
+        new StoreModel()
+        {
+            ClientId = "CLIENT ID",
+            ClientSecret = "CLIENT SECTET",
+            SubjectId = "client1" // eg client1
+        },
+        new StoreModel()
+        {
+            ClientId = "CLIENT ID",
+            ClientSecret = "CLIENT SECTET",
+            SubjectId = "client2" // eg client1
+        },
+    };
+
+    // implement this method .  ÓÃÓÚ²éÕÒÅäÖÃ
+    public StoreModel FindBySubjectId(string subjectId)
+    {
+        return _stores.FirstOrDefault(t => t.SubjectId == subjectId);
+    }
+}
+~~~  
+
+
+2. add the service .  Ìí¼Óµ½·şÎñ    
+~~~ csharp 
+ // startup.cs 
+public void ConfigureServices(IServiceCollection services)
+{
+    // .... others code ...
+    // config 
+    services.AddAuthentication() 
+        .AddWeixinAuthenticationStore<WeixinClientStore>(); //now only weixin implemented.  Ä¿Ç°Ö»ÊµÏÖÁËÎ¢ĞÅ
+
+    // .... others code ...
+}
+~~~   
+
+3. login action . µÇÂ¼²Ù×÷    
+~~~ csharp
+// AccountController.cs
+// add subjectId parameter . Ìí¼Ó subjectId ²ÎÊı
+[HttpPost]
+[AllowAnonymous]
+[ValidateAntiForgeryToken]
+public IActionResult ExternalLogin(string provider, string subjectId, string returnUrl = null)
+{
+    // Request a redirect to the external login provider.
+    var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { subjectId, returnUrl });
+    var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+
+    // add subjectId
+    properties.Items["subjectId"] = subjectId;
+
+    return Challenge(properties, provider);
+}
+~~~   
+
+4. web page . web Ò³Ãæ    
+~~~ html
+<!-- login.cshtml -->
+<form asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+    <div>
+        <p> 
+
+        <!-- config subjectId when submit  -->
+            <button type="submit" class="btn btn-default" name="provider" value="Weixin" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" asp-route-subjectId="client1">weixin(client1)</button>
+
+            <button type="submit" class="btn btn-default" name="provider" value="Weixin" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" asp-route-subjectId="client2">weixin(client2)</button>
+
+        </p>
+    </div>
+</form>
+
+~~~
+
+
+
+
+
 # Microsoft.AspNetCore.Authentication Extensions
 QQ and Webchat extensions for Microsoft.AspNetCore.Authentication
 
 # Get Started
-## dotnet core 1.1 
-
-- QQ   
-~~~ csharp
- // startup.cs 
-public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
-{
-    // config 
-    app.UseQQAuthentication(new Microsoft.AspNetCore.Authentication.QQ.QQAuthenticationOptions()
-            {
-                ClientId = "[you client id]",
-                ClientSecret ="[you client Secret]",
-            });
-
-    // .... others code ...
-}
-~~~   
-
-Then get external login information when login success . eg:  AccountController
-~~~  csharp
-// GET: /Account/ExternalLoginCallback
-[HttpGet]
-[AllowAnonymous]
-public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
-{ 
-    // .... others code ...
-    // .....
-  
-    // get information from AuthenticationManager (using Microsoft.AspNetCore.Authentication.QQ;)
-    var loginInfo = await HttpContext.Authentication.GetExternalQQLoginInfoAsync();
-    
-    // todo ...
-    // .... others code ...
-}
-~~~
-
-- Webchat
-~~~ csharp
- // startup.cs 
-public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
-{
-    // config 
-    app.UseWeixinAuthentication(new Microsoft.AspNetCore.Authentication.Weixin.WeixinAuthenticationOptions()
-            {
-                ClientId = "[you client id]",
-                ClientSecret ="[you client Secret]",
-            });
-
-    // .... others code ...
-}
-~~~   
-
-Then get external login information when login success . eg:  AccountController
-~~~  csharp
-// GET: /Account/ExternalLoginCallback
-[HttpGet]
-[AllowAnonymous]
-public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
-{ 
-    // .... others code ...
-    // .....
-  
-    // get information from AuthenticationManager (using Microsoft.AspNetCore.Authentication.Weixin;)
-    var loginInfo = await HttpContext.Authentication.GetExternalWeixinLoginInfoAsync();
-    
-    // todo ...
-    // .... others code ...
-}
-~~~
- 
-## dotnet core 2.0
 
 - QQ   
 ~~~ csharp
@@ -149,84 +170,10 @@ public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, 
 
  
 
+# Microsoft.AspNetCore.Authentication À©Õ¹
+QQ ºÍ Î¢ĞÅ Microsoft.AspNetCore.Authentication À©Õ¹
 
-     
-
-# Microsoft.AspNetCore.Authentication æ‰©å±•
-QQ å’Œ å¾®ä¿¡ Microsoft.AspNetCore.Authentication æ‰©å±•
-
-# ä½¿ç”¨æ–¹æ³•
-### dotnet core 1.1
-
-- QQ   
-~~~ csharp
- // startup.cs 
-public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
-{
-    // é…ç½® 
-    app.UseQQAuthentication(new Microsoft.AspNetCore.Authentication.QQ.QQAuthenticationOptions()
-            {
-                ClientId = "[you client id]",
-                ClientSecret ="[you client Secret]",
-            });
-
-    // .... others code ...
-}
-~~~   
-
-è·å–ç™»é™†æˆåŠŸåçš„ä¿¡æ¯ã€‚ eg:  AccountController
-~~~  csharp
-// GET: /Account/ExternalLoginCallback
-[HttpGet]
-[AllowAnonymous]
-public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
-{ 
-    // .... others code ...
-    // .....
-  
-    // è·å–ç™»å½•è€…ä¿¡æ¯ (using Microsoft.AspNetCore.Authentication.QQ;)
-    var loginInfo = await HttpContext.Authentication.GetExternalQQLoginInfoAsync();
-    
-    // todo ...
-    // .... others code ...
-}
-~~~
-
-- å¾®ä¿¡
-~~~ csharp
- // startup.cs 
-public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
-{
-    // é…ç½® 
-    app.UseWeixinAuthentication(new Microsoft.AspNetCore.Authentication.Weixin.WeixinAuthenticationOptions()
-            {
-                ClientId = "[you client id]",
-                ClientSecret ="[you client Secret]",
-            });
-
-    // .... others code ...
-}
-~~~   
-
-è·å–ç™»é™†æˆåŠŸåçš„ä¿¡æ¯ã€‚ eg:  AccountController
-~~~  csharp
-// GET: /Account/ExternalLoginCallback
-[HttpGet]
-[AllowAnonymous]
-public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
-{ 
-    // .... others code ...
-    // .....
-  
-    // è·å–ç™»å½•è€…ä¿¡æ¯ (using Microsoft.AspNetCore.Authentication.Weixin;)
-    var loginInfo = await HttpContext.Authentication.GetExternalWeixinLoginInfoAsync();
-    
-    // todo ...
-    // .... others code ...
-}
-~~~
-
-## dotnet core 2.0
+# Ê¹ÓÃ·½·¨
 
 - QQ   
 ~~~ csharp
@@ -234,7 +181,7 @@ public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, 
 public void ConfigureServices(IServiceCollection services)
 {
     // .... others code ...
-    // é…ç½® 
+    // ÅäÖÃ 
     services.AddAuthentication() 
         .AddQQAuthentication(options =>
         {
@@ -246,7 +193,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ~~~   
 
-è·å–ç™»é™†æˆåŠŸåçš„ä¿¡æ¯ã€‚  eg: AccountController
+»ñÈ¡µÇÂ½³É¹¦ºóµÄĞÅÏ¢¡£  eg: AccountController
 ~~~  csharp
 // GET: /Account/ExternalLoginCallback
 [HttpGet]
@@ -256,7 +203,7 @@ public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, 
     // .... others code ...
     // .....
   
-    // è·å–ç™»å½•è€…ä¿¡æ¯ (using Microsoft.AspNetCore.Authentication.QQ;)
+    // »ñÈ¡µÇÂ¼ÕßĞÅÏ¢ (using Microsoft.AspNetCore.Authentication.QQ;)
     var loginInfo = await HttpContext.GetExternalQQLoginInfoAsync();
     
     // todo ...
@@ -264,13 +211,13 @@ public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, 
 }
  
 ~~~
-- å¾®ä¿¡   
+- Î¢ĞÅ   
 ~~~ csharp
  // startup.cs 
 public void ConfigureServices(IServiceCollection services)
 {
     // .... others code ...
-    // é…ç½® 
+    // ÅäÖÃ 
     services.AddAuthentication() 
         .AddWeixinAuthentication(options =>
         {
@@ -282,7 +229,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ~~~   
 
-è·å–ç™»é™†æˆåŠŸåçš„ä¿¡æ¯ã€‚ eg: AccountController
+»ñÈ¡µÇÂ½³É¹¦ºóµÄĞÅÏ¢¡£ eg: AccountController
 ~~~  csharp
 // GET: /Account/ExternalLoginCallback
 [HttpGet]
@@ -292,7 +239,7 @@ public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, 
     // .... others code ...
     // .....
   
-    // è·å–ç™»å½•è€…ä¿¡æ¯ (using Microsoft.AspNetCore.Authentication.Weixin;)
+    // »ñÈ¡µÇÂ¼ÕßĞÅÏ¢ (using Microsoft.AspNetCore.Authentication.Weixin;)
     var loginInfo = await HttpContext.GetExternalWeixinLoginInfoAsync();
     
     // todo ...

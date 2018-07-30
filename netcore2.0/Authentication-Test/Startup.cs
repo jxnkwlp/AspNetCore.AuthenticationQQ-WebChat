@@ -35,18 +35,7 @@ namespace Authentication_Test
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
 
-            services.AddAuthentication()
-                //.AddQQAuthentication(options =>
-                //{
-                //    options.ClientId = Configuration.GetValue<string>("Authentication:QQ:ClientId");
-                //    options.ClientSecret = Configuration.GetValue<string>("Authentication:QQ:ClientSecret");
-                //})
-                //.AddWeixinAuthentication(options =>
-                //{
-                //    options.ClientId = "wxa60caa8a4543d3fa";
-                //    options.ClientSecret = "4f141b47bca5755a169d46584982186a";
-                //    // options.
-                //});
+            services.AddAuthentication() 
                 .AddWeixinAuthenticationStore<WeixinClientStore>();
 
             services.AddMvc();
@@ -85,14 +74,14 @@ namespace Authentication_Test
         List<StoreModel> _stores = new List<StoreModel>() {
             new StoreModel()
             {
-                ClientId = "wxa60caa8a4543d3fa",
-                ClientSecret = "4f141b47bca5755a169d46584982186a",
+                ClientId = "wxa60caxxxxxxx",
+                ClientSecret = "4f141xxxxxxxxx",
                 SubjectId = "client1"
             },
             new StoreModel()
             {
-                ClientId = "wx4498d6ee4aa07e63",
-                ClientSecret = "de9478a75268608105990af51198336d",
+                ClientId = "wx4498dxxxxxxxx",
+                ClientSecret = "de9478axxxxxxxxx",
                 SubjectId = "client2"
             },
         };

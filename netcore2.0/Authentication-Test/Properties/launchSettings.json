@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
-      "applicationUrl": "http://aaa.localtest.cc/",
+      "applicationUrl": "",
       "sslPort": 0
     },
     "iisExpress": {
