@@ -1,3 +1,14 @@
+# Dynamic config OAuth client  
+
+see [this](https://github.com/jxnkwlp/AspNetCore.AuthenticationQQ-WebChat/tree/muti-site) . 
+
+# OAuth 动态配置   
+
+[传送门](https://github.com/jxnkwlp/AspNetCore.AuthenticationQQ-WebChat/tree/muti-site) . 
+
+
+
+
 # Microsoft.AspNetCore.Authentication Extensions
 QQ and Webchat extensions for Microsoft.AspNetCore.Authentication
 
