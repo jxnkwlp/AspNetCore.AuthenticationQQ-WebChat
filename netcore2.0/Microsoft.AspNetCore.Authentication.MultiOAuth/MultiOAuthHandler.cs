@@ -62,10 +62,9 @@ namespace Microsoft.AspNetCore.Authentication.MultiOAuth
             // /signin-xxx/subject/xxx
 
             var callbackPath = Options.CallbackPath.Add("/subject").Value;
-
-            var query = Request.Query;
             var subjectId = Request.Path.Value.Remove(0, callbackPath.Length + 1);
 
+            var query = Request.Query;
             var state = query["state"];
             var properties = Options.StateDataFormat.Unprotect(state);
 
@@ -236,7 +235,7 @@ namespace Microsoft.AspNetCore.Authentication.MultiOAuth
             await Events.RedirectToAuthorizationEndpoint(redirectContext);
         }
 
-        protected virtual string BuildChallengeUrl(AuthenticationProperties properties, string redirectUri, StoreModel storeModel)
+        protected virtual string BuildChallengeUrl(AuthenticationProperties properties, string redirectUri, ClientStoreModel storeModel)
         {
             var scopeParameter = properties.GetParameter<ICollection<string>>(OAuthChallengeProperties.ScopeKey);
             var scope = scopeParameter != null ? FormatScope(scopeParameter) : FormatScope();
@@ -289,7 +288,7 @@ namespace Microsoft.AspNetCore.Authentication.MultiOAuth
             return this.Context.Items["MultiOAuthHandler:subjectId"] as string;
         }
 
-        protected virtual StoreModel GetClientStore()
+        protected virtual ClientStoreModel GetClientStore()
         {
             var subjectId = GetSubjectIdFromContext();
 
@@ -298,28 +297,28 @@ namespace Microsoft.AspNetCore.Authentication.MultiOAuth
                 throw new ArgumentNullException("subjectId");
             }
 
-            var store = ClientStore.FindBySubjectId(subjectId);
+            var store = ClientStore.FindBySubjectId(this.Options.ProviderName, subjectId);
 
             if (store == null)
             {
-                throw new ArgumentNullException($"can not found '{subjectId}' store config.");
+                throw new ArgumentNullException($"can not found '{subjectId}' in store.");
             }
 
             return store;
         }
 
-        protected virtual StoreModel GetClientStore(string subjectId)
+        protected virtual ClientStoreModel GetClientStore(string subjectId)
         {
             if (string.IsNullOrWhiteSpace(subjectId))
             {
                 throw new ArgumentNullException("subjectId");
             }
 
-            var store = ClientStore.FindBySubjectId(subjectId);
+            var store = ClientStore.FindBySubjectId(this.Options.ProviderName, subjectId);
 
             if (store == null)
             {
-                throw new ArgumentNullException($"can not found '{subjectId}' store config.");
+                throw new ArgumentNullException($"can not found '{subjectId}' in store.");
             }
 
             return store;

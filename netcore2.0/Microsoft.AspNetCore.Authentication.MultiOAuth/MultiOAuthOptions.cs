@@ -22,6 +22,11 @@ namespace Microsoft.AspNetCore.Authentication.MultiOAuth
         {
             base.Validate();
 
+            if (string.IsNullOrEmpty(ProviderName))
+            {
+                throw new ArgumentException($"The '{nameof(ProviderName)}' option must be provided");
+            }
+
             if (string.IsNullOrEmpty(AuthorizationEndpoint))
             {
                 throw new ArgumentException($"The '{nameof(AuthorizationEndpoint)}' option must be provided");
@@ -38,6 +43,9 @@ namespace Microsoft.AspNetCore.Authentication.MultiOAuth
             }
         }
 
+
+
+        public string ProviderName { get; set; }
 
 
         /// <summary>

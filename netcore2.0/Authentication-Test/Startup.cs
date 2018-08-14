@@ -35,8 +35,9 @@ namespace Authentication_Test
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
 
-            services.AddAuthentication() 
-                .AddWeixinAuthenticationStore<WeixinClientStore>();
+            services.AddAuthentication()
+                .AddMultiOAuthStore<MylientStore>() 
+                .AddMultiWeixinAuthentication(); // 微信
 
             services.AddMvc();
 
@@ -69,26 +70,28 @@ namespace Authentication_Test
     }
 
 
-    public class WeixinClientStore : IClientStore
+    public class MylientStore : IClientStore
     {
-        List<StoreModel> _stores = new List<StoreModel>() {
-            new StoreModel()
+        List<ClientStoreModel> _stores = new List<ClientStoreModel>() {
+            new ClientStoreModel()
             {
+                Provider= "Weixin",
                 ClientId = "wxa60caxxxxxxx",
                 ClientSecret = "4f141xxxxxxxxx",
                 SubjectId = "client1"
             },
-            new StoreModel()
+            new ClientStoreModel()
             {
+                Provider = "Weixin",
                 ClientId = "wx4498dxxxxxxxx",
                 ClientSecret = "de9478axxxxxxxxx",
                 SubjectId = "client2"
             },
         };
 
-        public StoreModel FindBySubjectId(string subjectId)
+        public ClientStoreModel FindBySubjectId(string provider, string subjectId)
         {
-            return _stores.FirstOrDefault(t => t.SubjectId == subjectId);
+            return _stores.FirstOrDefault(t => t.Provider == provider && t.SubjectId == subjectId);
         }
     }
 }

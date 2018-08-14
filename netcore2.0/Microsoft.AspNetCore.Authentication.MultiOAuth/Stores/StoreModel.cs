@@ -4,9 +4,12 @@ using System.Text;
 
 namespace Microsoft.AspNetCore.Authentication.MultiOAuth.Stores
 {
-    public class StoreModel
+    /// <summary>
+    ///  表示一个 Client 信息 
+    /// </summary>
+    public class ClientStoreModel
     {
-        //public string Provider { get; set; }
+        public string Provider { get; set; }
 
         public string SubjectId { get; set; }
 

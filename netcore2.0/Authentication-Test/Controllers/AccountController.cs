@@ -258,12 +258,12 @@ namespace Authentication_Test.Controllers
         {
             // Request a redirect to the external login provider.
             var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { subjectId, returnUrl });
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            AuthenticationProperties properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl); 
 
             // add subjectId
             properties.Items["subjectId"] = subjectId;
 
-            return Challenge(properties, provider);
+            return Challenge(properties, provider);  // 
         }
 
         [HttpGet]

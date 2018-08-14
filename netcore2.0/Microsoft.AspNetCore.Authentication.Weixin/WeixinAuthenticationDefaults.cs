@@ -12,6 +12,8 @@
 
         public const string DisplayName = "Weixin";
 
+        public const string Name = "Weixin";
+
         /// <summary>
         /// Default value for <see cref="RemoteAuthenticationOptions.CallbackPath"/>.
         /// </summary>

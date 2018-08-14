@@ -12,6 +12,7 @@ namespace Microsoft.AspNetCore.Authentication.Weixin
         {
             ClaimsIssuer = WeixinAuthenticationDefaults.Issuer;
             CallbackPath = new PathString(WeixinAuthenticationDefaults.CallbackPath);
+            ProviderName = WeixinAuthenticationDefaults.Name;
 
             AuthorizationEndpoint = WeixinAuthenticationDefaults.AuthorizationEndpoint;
             TokenEndpoint = WeixinAuthenticationDefaults.TokenEndpoint;

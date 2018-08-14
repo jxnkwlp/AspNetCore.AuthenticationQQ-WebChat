@@ -149,7 +149,7 @@ namespace Microsoft.AspNetCore.Authentication.Weixin
         ///  Step 1：请求CODE
         ///  构建用户授权地址
         /// </summary>
-        protected override string BuildChallengeUrl(AuthenticationProperties properties, string redirectUri, StoreModel storeModel)
+        protected override string BuildChallengeUrl(AuthenticationProperties properties, string redirectUri, ClientStoreModel storeModel)
         {
             return QueryHelpers.AddQueryString(Options.AuthorizationEndpoint, new Dictionary<string, string>
             {
