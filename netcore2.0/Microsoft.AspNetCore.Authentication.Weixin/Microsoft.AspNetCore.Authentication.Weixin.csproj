@@ -1,7 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Passingwind.AspNetCore.Authentication.Weixin</PackageId>
+    <Authors>Passingwind</Authors>
+    <Product>Passingwind.AspNetCore.Authentication.Weixin</Product>
+    <Description>适用于ASP.NET Core2.0 和 2.1 的 OAuth2 认证中间件，使Web应用程序支持用微信快捷登录。</Description>
+    <PackageProjectUrl>https://github.com/jxnkwlp/AspNetCore.AuthenticationQQ-WebChat</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jxnkwlp/AspNetCore.AuthenticationQQ-WebChat</RepositoryUrl>
+    <RepositoryType>github</RepositoryType>
+    <PackageTags>WeChat, weixin, security, aspnet core, authentication</PackageTags>
+    <Version>2.0.0</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\Microsoft.AspNetCore.Authentication.Weixin.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

@@ -57,8 +57,7 @@ namespace Authentication_Test
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
-                app.UseBrowserLink();
+                app.UseDeveloperExceptionPage(); 
                 app.UseDatabaseErrorPage();
             }
             else

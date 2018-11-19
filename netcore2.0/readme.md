@@ -1,7 +1,21 @@
 # Microsoft.AspNetCore.Authentication Extensions
 QQ and Webchat extensions for Microsoft.AspNetCore.Authentication
 
+
 # Get Started
+
+- Install nuget package
+
+  WebChat 
+
+    ~~~
+    PM> Install-Package Passingwind.AspNetCore.Authentication.Weixin
+    ~~~ 
+  QQ 
+
+    ~~~
+    PM> Install-Package Passingwind.AspNetCore.Authentication.QQ
+    ~~~ 
 
 - QQ   
 ~~~ csharp
@@ -82,6 +96,19 @@ public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, 
 QQ 和 微信 Microsoft.AspNetCore.Authentication 扩展
 
 # 使用方法
+
+- 安装 nuget 包
+
+  微信 
+
+    ~~~
+    PM> Install-Package Passingwind.AspNetCore.Authentication.Weixin
+    ~~~ 
+  QQ 
+
+    ~~~
+    PM> Install-Package Passingwind.AspNetCore.Authentication.QQ
+    ~~~ 
 
 - QQ   
 ~~~ csharp
