@@ -9,7 +9,7 @@
     <PackageProjectUrl>https://github.com/jxnkwlp/AspNetCore.AuthenticationQQ-WebChat</PackageProjectUrl>
     <RepositoryUrl>https://github.com/jxnkwlp/AspNetCore.AuthenticationQQ-WebChat</RepositoryUrl>
     <RepositoryType>github</RepositoryType>
-    <PackageTags>WeChat, weixin, security, aspnet core, authentication</PackageTags>
+    <PackageTags>webchat, weixin, security, aspnet core, authentication</PackageTags>
     <Version>2.0.0</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
