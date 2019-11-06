@@ -1,119 +1,142 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Http.Features.Authentication;
-using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.Http.Authentication;
+using Newtonsoft.Json.Linq;
+#endif
+#if NETCOREAPP3_0
+using System.Text.Json;
+#endif
 
 namespace Microsoft.AspNetCore.Authentication.Weixin
 {
-    public static class HttpContextExtensions
-    {
-        /// <summary> 
-        ///  Get the external login information from weixin provider.
-        /// </summary> 
-        public static async Task<Dictionary<string, string>> GetExternalWeixinLoginInfoAsync(this HttpContext httpContext, string expectedXsrf = null)
-        {
-            var auth = await httpContext.AuthenticateAsync(WeixinAuthenticationDefaults.AuthenticationScheme);
+	public static class HttpContextExtensions
+	{
+		/// <summary> 
+		///  Get the external login information from weixin provider.
+		/// </summary> 
+		public static async Task<Dictionary<string, string>> GetExternalWeixinLoginInfoAsync(this HttpContext httpContext, string expectedXsrf = null)
+		{
+			var auth = await httpContext.AuthenticateAsync(WeixinAuthenticationDefaults.AuthenticationScheme);
 
-            var items = auth?.Properties?.Items;
-            if (auth?.Principal == null || items == null || !items.ContainsKey("LoginProvider"))
-            {
-                return null;
-            }
+			var items = auth?.Properties?.Items;
+			if (auth?.Principal == null || items == null || !items.ContainsKey("LoginProvider"))
+			{
+				return null;
+			}
 
-            if (expectedXsrf != null)
-            {
-                if (!items.ContainsKey("XsrfId"))
-                {
-                    return null;
-                }
-                var userId = items["XsrfId"] as string;
-                if (userId != expectedXsrf)
-                {
-                    return null;
-                }
-            }
+			if (expectedXsrf != null)
+			{
+				if (!items.ContainsKey("XsrfId"))
+				{
+					return null;
+				}
+				var userId = items["XsrfId"] as string;
+				if (userId != expectedXsrf)
+				{
+					return null;
+				}
+			}
 
-            var userInfo = auth.Principal.FindFirst("urn:weixin:user_info");
-            if (userInfo == null)
-            {
-                return null;
-            }
+			var userInfo = auth.Principal.FindFirst("urn:weixin:user_info");
+			if (userInfo == null)
+			{
+				return null;
+			}
 
-            if (!string.IsNullOrEmpty(userInfo.Value))
-            {
-                var jObject = JObject.Parse(userInfo.Value);
+			if (!string.IsNullOrEmpty(userInfo.Value))
+			{
+				return GetUserInfo(userInfo.Value);
+			}
 
-                Dictionary<string, string> dict = new Dictionary<string, string>();
+			return null;
+		}
 
-                foreach (var item in jObject)
-                {
-                    dict[item.Key] = item.Value?.ToString();
-                }
+		private static Dictionary<string, string> GetUserInfo(string json)
+		{
+			Dictionary<string, string> dict = new Dictionary<string, string>();
 
-                return dict;
-            }
+#if NETSTANDARD2_0
+			var jObject = JObject.Parse(json);
 
-            return null;
+			foreach (var item in jObject)
+			{
+				dict[item.Key] = item.Value?.ToString();
+			}
+#endif
 
-        }
-    }
+#if NETCOREAPP3_0
+			var document = JsonDocument.Parse(json);
 
-    #region Old Code
+			foreach (var item in document.RootElement.EnumerateObject())
+			{
+				dict[item.Name] = item.Value.GetString();
+			}
+#endif
+			return dict;
+		}
+	}
 
-    public static class AuthenticationManagerExtensions
-    {
-        /// <summary> 
-        ///  Get the external login information from weixin provider.
-        /// </summary> 
-        [Obsolete("Use HttpContext.GetExternalWeixinLoginInfoAsync()")]
-        public static async Task<Dictionary<string, string>> GetExternalWeixinLoginInfoAsync(this AuthenticationManager authenticationManager, string expectedXsrf = null)
-        {
-            AuthenticateContext authenticateContext = new AuthenticateContext(WeixinAuthenticationDefaults.AuthenticationScheme);
-            await authenticationManager.AuthenticateAsync(authenticateContext);
+#if NETSTANDARD2_0
 
-            if (authenticateContext.Principal == null || authenticateContext.Properties == null || !authenticateContext.Properties.ContainsKey("LoginProvider"))
-            {
-                return null;
-            }
+	#region Old Code
 
-            if (expectedXsrf != null)
-            {
-                if (!authenticateContext.Properties.ContainsKey("XsrfId"))
-                {
-                    return null;
-                }
-                if (authenticateContext.Properties["XsrfId"] != expectedXsrf)
-                {
-                    return null;
-                }
-            }
+	public static class AuthenticationManagerExtensions
+	{
+		/// <summary> 
+		///  Get the external login information from weixin provider.
+		/// </summary> 
+		[Obsolete("Use HttpContext.GetExternalWeixinLoginInfoAsync()")]
+		public static async Task<Dictionary<string, string>> GetExternalWeixinLoginInfoAsync(this AuthenticationManager authenticationManager, string expectedXsrf = null)
+		{
+			AuthenticateContext authenticateContext = new AuthenticateContext(WeixinAuthenticationDefaults.AuthenticationScheme);
+			await authenticationManager.AuthenticateAsync(authenticateContext);
 
-            var userInfo = authenticateContext.Principal.FindFirst("urn:weixin:user_info");
-            if (userInfo == null)
-            {
-                return null;
-            }
+			if (authenticateContext.Principal == null || authenticateContext.Properties == null || !authenticateContext.Properties.ContainsKey("LoginProvider"))
+			{
+				return null;
+			}
 
-            if (!string.IsNullOrEmpty(userInfo.Value))
-            {
-                var jObject = JObject.Parse(userInfo.Value);
+			if (expectedXsrf != null)
+			{
+				if (!authenticateContext.Properties.ContainsKey("XsrfId"))
+				{
+					return null;
+				}
+				if (authenticateContext.Properties["XsrfId"] != expectedXsrf)
+				{
+					return null;
+				}
+			}
 
-                Dictionary<string, string> dict = new Dictionary<string, string>();
+			var userInfo = authenticateContext.Principal.FindFirst("urn:weixin:user_info");
+			if (userInfo == null)
+			{
+				return null;
+			}
 
-                foreach (var item in jObject)
-                {
-                    dict[item.Key] = item.Value?.ToString();
-                }
+			if (!string.IsNullOrEmpty(userInfo.Value))
+			{
+				var jObject = JObject.Parse(userInfo.Value);
 
-                return dict;
-            }
+				Dictionary<string, string> dict = new Dictionary<string, string>();
 
-            return null;
-        }
-    }
+				foreach (var item in jObject)
+				{
+					dict[item.Key] = item.Value?.ToString();
+				}
 
-    #endregion
+				return dict;
+			}
+
+			return null;
+		}
+	}
+
+	#endregion
+
+#endif
 }

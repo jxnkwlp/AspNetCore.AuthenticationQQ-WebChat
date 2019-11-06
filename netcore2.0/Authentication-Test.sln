@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29409.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authentication-Test", "Authentication-Test\Authentication-Test.csproj", "{81827AA3-D36D-4EB3-BA3C-83CFABF4DE64}"
 EndProject
@@ -11,8 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Authen
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0C906ED4-5BD0-4608-B888-56B5FD4621FC}"
 	ProjectSection(SolutionItems) = preProject
+		..\.editorconfig = ..\.editorconfig
 		readme.md = readme.md
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authentication-Test-3_0", "Authentication-Test-3_0\Authentication-Test-3_0.csproj", "{4CE06585-1144-4E55-B6B7-2AE7963F8796}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +35,10 @@ Global
 		{AB6BB6D8-A15D-48DD-B426-CCDC0B938E5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB6BB6D8-A15D-48DD-B426-CCDC0B938E5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB6BB6D8-A15D-48DD-B426-CCDC0B938E5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CE06585-1144-4E55-B6B7-2AE7963F8796}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CE06585-1144-4E55-B6B7-2AE7963F8796}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CE06585-1144-4E55-B6B7-2AE7963F8796}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CE06585-1144-4E55-B6B7-2AE7963F8796}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
