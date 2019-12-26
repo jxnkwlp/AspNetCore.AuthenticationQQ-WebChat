@@ -7,7 +7,7 @@ using System;
 using Microsoft.AspNetCore.Http.Authentication;
 using Newtonsoft.Json.Linq;
 #endif
-#if NETCOREAPP3_0
+#if NETCOREAPP3_0 || NETCOREAPP3_1
 using System.Text.Json;
 #endif
 
@@ -68,7 +68,7 @@ namespace Microsoft.AspNetCore.Authentication.QQ
 			}
 #endif
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_0 || NETCOREAPP3_1
 			var document = JsonDocument.Parse(json);
 
 			foreach (var item in document.RootElement.EnumerateObject())

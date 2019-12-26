@@ -26,7 +26,7 @@ namespace Microsoft.AspNetCore.Authentication.QQ
 			ClaimActionCollectionMapExtensions.MapJsonKey(ClaimActions, ClaimTypes.Name, "displayName");
 #endif
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_0 || NETCOREAPP3_1
 
 			ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
 			ClaimActions.MapJsonKey(ClaimTypes.Name, "nickname");

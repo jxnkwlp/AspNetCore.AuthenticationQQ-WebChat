@@ -20,7 +20,7 @@ namespace Microsoft.AspNetCore.Authentication.Weixin
 
 			Scope.Add("snsapi_login");
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_0 || NETCOREAPP3_1
 
 			ClaimActions.MapJsonKey(ClaimTypes.Name, "nickname");
 			ClaimActions.MapJsonKey(ClaimTypes.Gender, "sex");
